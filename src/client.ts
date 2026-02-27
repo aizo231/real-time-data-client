@@ -120,25 +120,34 @@ export class RealTimeDataClient {
      * Handles WebSocket errors. Logs the error and attempts reconnection if `autoReconnect` is enabled.
      * @param err Error object describing the issue.
      */
-    private onError = async (err: ErrorEvent) => {
+    this.onError = (err) => tslib_1.__awaiter(this, void 0, void 0, function* () {
         console.error("error", err);
+        if (this.ws) {
+            this.ws.removeAllListeners();
+            this.ws.terminate();
+            this.ws = null;
+        }
         if (this.autoReconnect) {
             this.connect();
         }
-    };
-
+    });
     /**
      * Handles WebSocket 'close' event. Logs the disconnect reason and attempts reconnection if `autoReconnect` is enabled.
      * @param code Close event code.
      * @param reason Buffer containing the reason for closure.
      */
-    private onClose = async (message: CloseEvent) => {
+    this.onClose = (message) => tslib_1.__awaiter(this, void 0, void 0, function* () {
         console.error("disconnected", "code", message.code, "reason", message.reason);
-        this.notifyStatusChange(ConnectionStatus.DISCONNECTED);
+        this.notifyStatusChange(model_1.ConnectionStatus.DISCONNECTED);
+        if (this.ws) {
+            this.ws.removeAllListeners();
+            this.ws.terminate();
+            this.ws = null;
+        }
         if (this.autoReconnect) {
             this.connect();
         }
-    };
+    });
 
     /**
      * Sends a ping message to keep the connection alive.
